@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "research-web-pipeline"
+version = "0.1.0"
+description = "Воспроизводимый сбор веб-данных через четыре сменных загрузчика"
+requires-python = ">=3.11"
+dependencies = [
+  "curl_cffi==0.16.3",
+  "beautifulsoup4==4.15.0",
+  "openpyxl==3.1.5",
+]
+
+[project.optional-dependencies]
+browsers = ["patchright==1.64.1", "camoufox==0.5.8", "clearcote==0.51.1"]
+dev = ["pytest==9.1.1"]
+
+[tool.setuptools.packages.find]
+include = ["web_pipeline*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["browser: запуск установленного браузера"]

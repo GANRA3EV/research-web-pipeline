@@ -1,0 +1,16 @@
+{
+  "engines": ["curl_cffi", "patchright", "camoufox", "clearcote"],
+  "headless": true,
+  "timeout_seconds": 30,
+  "delay_seconds": 1,
+  "retries": 1,
+  "retry_delay_seconds": 2,
+  "sources": [
+    {
+      "id": "example",
+      "url": "https://example.com",
+      "title_selector": "h1",
+      "text_selector": "body"
+    }
+  ]
+}
