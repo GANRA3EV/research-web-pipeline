@@ -50,7 +50,8 @@ def fetch(engine: str, source: dict, config: dict) -> FetchResult:
                 browser.close()
     if engine == "camoufox":
         from camoufox.sync_api import Camoufox
-        with Camoufox(headless=headless, timeout=timeout * 1000) as browser:
+        from .compatibility import windows_fpgen_paths
+        with windows_fpgen_paths(), Camoufox(headless=headless, timeout=timeout * 1000) as browser:
             return browser_page(browser, source, timeout)
     if engine == "clearcote":
         from clearcote import launch

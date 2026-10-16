@@ -12,7 +12,9 @@ def load_config(path: Path) -> dict:
     if not isinstance(config, dict):
         raise ValueError("Корень конфигурации должен быть объектом JSON")
     engines = config.get("engines", ["curl_cffi"])
-    if not isinstance(engines, list) or not engines or any(e not in ENGINES for e in engines):
+    if not isinstance(engines, list) or not engines or any(
+        not isinstance(e, str) or e not in ENGINES for e in engines
+    ):
         raise ValueError("Некорректный список engines")
     if len(engines) != len(set(engines)):
         raise ValueError("Повтор загрузчика в engines")
@@ -29,7 +31,10 @@ def load_config(path: Path) -> dict:
         if not isinstance(sid, str) or not sid or sid in ids:
             raise ValueError("Идентификаторы sources должны быть непустыми и уникальными")
         ids.add(sid)
-        url = urlsplit(source.get("url", ""))
+        source_url = source.get("url")
+        if not isinstance(source_url, str) or not source_url:
+            raise ValueError(f"Нужен строковый URL источника {sid}")
+        url = urlsplit(source_url)
         if url.scheme not in {"http", "https"} or not url.hostname or url.username or url.password:
             raise ValueError(f"Некорректный HTTP URL источника {sid}")
         for key in ("title_selector", "text_selector", "wait_for_selector"):

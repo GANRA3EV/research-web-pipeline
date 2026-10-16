@@ -79,6 +79,7 @@ def test_excel_formula_and_long_text_roundtrip(tmp_path):
     {"retries": True}, {"sources": []},
     {"sources": [{"id": "x", "url": "file:///tmp/test"}]},
     {"sources": [{"id": "x", "url": "https://example.com", "text_selector": "["}]},
+    {"engines": [{}]}, {"sources": [{"id": "x", "url": 123}]},
 ])
 def test_invalid_config_rejected_before_network(tmp_path, site, edit):
     cfg = config(site)
