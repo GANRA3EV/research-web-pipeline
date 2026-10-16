@@ -59,4 +59,25 @@ def load_config(path: Path) -> dict:
     if not isinstance(config.get("headless", True), bool):
         raise ValueError("headless должен быть логическим значением")
     config.update(engines=engines, retries=retries)
+    if "analysis" in config:
+        analysis = config["analysis"]
+        if not isinstance(analysis, dict):
+            raise ValueError("analysis должен быть объектом JSON")
+        model = analysis.get("model_path")
+        if not isinstance(model, str) or not model.strip():
+            raise ValueError("Для анализа нужен model_path")
+        digest = analysis.get("model_sha256")
+        import re
+        if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-fA-F]{64}", digest):
+            raise ValueError("Для анализа нужен проверенный model_sha256")
+        chunk_words = analysis.get("chunk_words", 200)
+        if isinstance(chunk_words, bool) or not isinstance(chunk_words, int) or chunk_words < 1:
+            raise ValueError("chunk_words должен быть положительным целым числом")
+        if not isinstance(analysis.get("with_llm", False), bool):
+            raise ValueError("with_llm должен быть логическим значением")
+        model_path = Path(model)
+        if not model_path.is_absolute():
+            model_path = path.resolve().parent / model_path
+        config["analysis"] = {**analysis, "model_path": str(model_path.resolve()),
+                              "model_sha256": digest.lower(), "chunk_words": chunk_words}
     return config

@@ -4,6 +4,15 @@
 **Camoufox** и **Clearcote Browser**. Результат работы — исходные страницы и
 извлечённые тексты в XLSX, сведения о происхождении данных, диагностика и журналы.
 
+Начиная с версии 0.2.0 доступен общий запуск с классификатором из
+`GANRA3EV/fintech-triage`. Инструкция, демонстрация и ограничения описаны в
+[документе по объединению](docs/SEMANTIC_INTEGRATION.md).
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -e ".[analysis,dev]"
+.\.venv\Scripts\python.exe tools/demo_semantic.py --output runs/semantic-demo
+```
+
 ## Последовательность работы
 
 1. Проверка конфигурации и CSS-селекторов до сетевых запросов.

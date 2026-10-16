@@ -23,6 +23,10 @@ def utc_now():
 
 
 def run(config: dict, output: Path, fetcher=fetch) -> dict:
+    analyzer = None
+    if "analysis" in config:
+        from .analysis import load_analyzer
+        analyzer = load_analyzer(config["analysis"])
     # Каждый запуск получает отдельную папку; существующие результаты не перезаписываются.
     output.mkdir(parents=True, exist_ok=False)
     data = output / "data"
@@ -115,6 +119,15 @@ def run(config: dict, output: Path, fetcher=fetch) -> dict:
     save_json(logs / "word_count_report.json", {"records": counts, "unique_total": sum(r["word_count"] for r in valid)})
     words = re.findall(r"[а-яёa-z]+", " ".join(r["text"] for r in valid).lower())
     save_json(logs / "word_frequency_report.json", Counter(words).most_common(50))
+    if analyzer is not None:
+        from .analysis import analyze
+        try:
+            report = analyze(processed, config["analysis"], analyzer, output)
+            diagnostics["analysis_status"] = report["status"]
+        except Exception as exc:
+            diagnostics["analysis_status"] = "error"
+            save_json(logs / "analysis_report.json", {"status": "error", "error_type": type(exc).__name__})
+        save_json(logs / "diagnostics.json", diagnostics)
     manifest.update(finished_utc=utc_now(), diagnostics=diagnostics)
     manifest["artifacts"] = {p.relative_to(output).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
                              for p in sorted(output.rglob("*")) if p.is_file() and p.name != "manifest.json"}

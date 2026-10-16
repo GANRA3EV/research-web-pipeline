@@ -1,0 +1,15 @@
+{
+  "engines": ["curl_cffi"],
+  "timeout_seconds": 30,
+  "delay_seconds": 1,
+  "retries": 1,
+  "sources": [
+    {"id": "example", "url": "https://example.com", "text_selector": "body"}
+  ],
+  "analysis": {
+    "model_path": "../artifacts/model.joblib",
+    "model_sha256": "REPLACE_WITH_SHA256_OF_YOUR_TRUSTED_MODEL",
+    "chunk_words": 200,
+    "with_llm": false
+  }
+}

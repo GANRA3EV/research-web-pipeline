@@ -17,4 +17,4 @@ def main():
         result = run(config, output)
     except (ValueError, OSError) as exc:
         parser.exit(2, f"Ошибка параметров или файлов: {exc}\n")
-    return 1 if result["failed_pairs"] else 0
+    return 1 if result["failed_pairs"] or result.get("analysis_status", "ok") != "ok" else 0
