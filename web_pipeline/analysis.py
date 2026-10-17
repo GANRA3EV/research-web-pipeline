@@ -5,7 +5,7 @@ import math
 from pathlib import Path
 from .storage import write_xlsx
 
-TRIAGE_REVISION = "567cb7f4806869d4676af3ba50f9acf3da27b6a3"
+TRIAGE_REVISION = "3b75fb49c213536519a6a36a24828f63f219b3a6"
 
 
 def load_analyzer(config):

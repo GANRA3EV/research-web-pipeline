@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "research-web-pipeline"
-version = "0.3.0"
+version = "0.4.0"
 description = "Воспроизводимый сбор веб-данных через четыре сменных загрузчика"
 requires-python = ">=3.11"
 dependencies = [
@@ -19,8 +19,8 @@ browsers = [
   "fpgen==1.3.0", "indexed-zstd==1.7.2",
 ]
 dev = ["pytest==9.1.1"]
-analysis = ["fintech-triage @ git+https://github.com/GANRA3EV/fintech-triage.git@567cb7f4806869d4676af3ba50f9acf3da27b6a3"]
-local-hf = ["fintech-triage[local-hf] @ git+https://github.com/GANRA3EV/fintech-triage.git@567cb7f4806869d4676af3ba50f9acf3da27b6a3"]
+analysis = ["fintech-triage @ git+https://github.com/GANRA3EV/fintech-triage.git@3b75fb49c213536519a6a36a24828f63f219b3a6"]
+local-hf = ["fintech-triage[local-hf] @ git+https://github.com/GANRA3EV/fintech-triage.git@3b75fb49c213536519a6a36a24828f63f219b3a6"]
 embeddings = ["sentence-transformers>=3,<6"]
 
 [tool.setuptools.packages.find]

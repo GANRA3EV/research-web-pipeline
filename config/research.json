@@ -1,0 +1,6 @@
+{
+  "engines": ["curl_cffi", "patchright", "camoufox", "clearcote"],
+  "repetitions": 3,
+  "seed": 42,
+  "timeout_seconds": 15
+}
