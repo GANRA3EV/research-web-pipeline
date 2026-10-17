@@ -75,6 +75,10 @@ def load_config(path: Path) -> dict:
             raise ValueError("chunk_words должен быть положительным целым числом")
         if not isinstance(analysis.get("with_llm", False), bool):
             raise ValueError("with_llm должен быть логическим значением")
+        if not isinstance(analysis.get("with_summary", False), bool):
+            raise ValueError("with_summary должен быть логическим значением")
+        if "with_summary" in analysis and "with_llm" in analysis and analysis["with_summary"] != analysis["with_llm"]:
+            raise ValueError("with_summary и совместимый параметр with_llm противоречат друг другу")
         model_path = Path(model)
         if not model_path.is_absolute():
             model_path = path.resolve().parent / model_path

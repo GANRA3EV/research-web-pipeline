@@ -8,6 +8,14 @@
 `GANRA3EV/fintech-triage`. Инструкция, демонстрация и ограничения описаны в
 [документе по объединению](docs/SEMANTIC_INTEGRATION.md).
 
+В версии 0.3.0 Qwen API заменён локальной `rubert-tiny2`. Для обучения
+классификаторов и извлечения резюме на CPU используйте:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -e ".[analysis,local-hf]"
+.\.venv\Scripts\python.exe tools/demo_semantic.py --backend rubert --with-summary --output runs/rubert-demo
+```
+
 ```powershell
 .\.venv\Scripts\python.exe -m pip install -e ".[analysis,dev]"
 .\.venv\Scripts\python.exe tools/demo_semantic.py --output runs/semantic-demo

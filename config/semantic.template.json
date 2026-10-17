@@ -10,6 +10,6 @@
     "model_path": "../artifacts/model.joblib",
     "model_sha256": "REPLACE_WITH_SHA256_OF_YOUR_TRUSTED_MODEL",
     "chunk_words": 200,
-    "with_llm": false
+    "with_summary": false
   }
 }

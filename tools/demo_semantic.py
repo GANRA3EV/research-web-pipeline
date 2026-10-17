@@ -15,6 +15,8 @@ from threading import Thread
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=Path("runs/semantic-demo"))
+    parser.add_argument("--backend", choices=["tfidf", "rubert"], default="tfidf")
+    parser.add_argument("--with-summary", action="store_true")
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=False)
     import joblib
@@ -28,7 +30,8 @@ def main():
         {"text": "Статус денежного перевода", "primary": "transfer", "secondary": None, "urgency": "normal"},
     ]
     write_xlsx(args.output / "synthetic_training.xlsx", {"synthetic": rows})
-    model = TicketModel(["card", "transfer"]).fit(pd.DataFrame(rows))
+    model = TicketModel(["card", "transfer"], backend=args.backend).fit(pd.DataFrame(rows))
+    model.encoder = None
     model_path = args.output / "synthetic_model.joblib"
     joblib.dump({"model": model, "threshold": 1.01,
                  "categories": {"card": "Карта", "transfer": "Перевод"}}, model_path)
@@ -52,7 +55,7 @@ def main():
                            "title_selector": "h1", "text_selector": "main"} for name in ("card", "transfer")],
               "analysis": {"model_path": model_path.name,
                            "model_sha256": hashlib.sha256(model_path.read_bytes()).hexdigest(),
-                           "chunk_words": 200, "with_llm": False}}
+                           "chunk_words": 200, "with_summary": args.with_summary}}
     config_path = args.output / "config.json"
     config_path.write_text(json.dumps(config, ensure_ascii=False, indent=2), encoding="utf-8")
     try:

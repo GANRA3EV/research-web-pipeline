@@ -5,7 +5,7 @@ import math
 from pathlib import Path
 from .storage import write_xlsx
 
-TRIAGE_REVISION = "7e4868d00dfea39a08d211405cb86f11c2bb8263"
+TRIAGE_REVISION = "567cb7f4806869d4676af3ba50f9acf3da27b6a3"
 
 
 def load_analyzer(config):
@@ -75,7 +75,7 @@ def analyze(records, config, bundle, output):
         result = {key: json.dumps(value, ensure_ascii=False) if isinstance(value, (dict, list)) else value
                   for key, value in result.items()}
         prediction = {"analysis_id": chunk["analysis_id"], "chunk_id": chunk["chunk_id"], **result}
-        if config.get("with_llm", False):
+        if config.get("with_summary", config.get("with_llm", False)):
             draft = summarize(chunk["text"], bundle["categories"])
             prediction["draft_status"] = draft["status"]
             prediction["draft_json"] = json.dumps(draft, ensure_ascii=False)
@@ -88,11 +88,18 @@ def analyze(records, config, bundle, output):
               "model_sha256": config["model_sha256"], "triage_revision": TRIAGE_REVISION,
               "backend": bundle["model"].backend, "threshold": bundle["threshold"],
               "categories": bundle["categories"], "encoder_name": bundle["model"].encoder_name,
-              "chunk_words": config["chunk_words"], "with_llm": config.get("with_llm", False),
+              "encoder_revision": getattr(bundle["model"], "encoder_revision", None),
+              "chunk_words": config["chunk_words"], "with_summary": config.get("with_summary", config.get("with_llm", False)),
+              "summary_failed_chunks": sum(p.get("draft_status") == "invalid_or_unavailable" for p in predictions),
               "status": "ok" if predictions else "no_analyzable_text",
               "limitations": ["Прогноз относится к фрагменту, метки целого документа не агрегируются.",
                               "Число слов не гарантирует соответствия пределу токенов e5; возможное усечение нужно оценить отдельно.",
                               "Качество на веб-страницах без предметной разметки не оценено."]}
+    if report["summary_failed_chunks"]:
+        report["status"] = "summary_unavailable"
+    if report["with_summary"]:
+        from triage.local_hf import MODEL_NAME, MODEL_REVISION
+        report["summary_encoder"] = {"name": MODEL_NAME, "revision": MODEL_REVISION, "method": "extractive"}
     (output / "logs" / "analysis_report.json").write_text(
         json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     return report

@@ -116,3 +116,26 @@ def test_optional_summary_is_linked_to_chunk(site, analysis_config, tmp_path, mo
     assert predictions[0]["draft_status"] == "draft"
     assert len(calls) == 1
     assert json.loads(predictions[0]["draft_json"])["result"]["evidence"] == calls
+
+
+def test_missing_summary_is_reported(site, analysis_config, tmp_path, monkeypatch):
+    import triage.llm
+    monkeypatch.setattr(triage.llm, "summarize", lambda *args: {
+        "status": "invalid_or_unavailable", "result": None, "operator_review": True})
+    cfg = collection_config(site)
+    cfg["analysis"] = {**analysis_config, "with_summary": True}
+    cfg["analysis"].pop("with_llm")
+    output = tmp_path / "run"
+    assert run(cfg, output)["analysis_status"] == "summary_unavailable"
+    report = json.loads((output / "logs/analysis_report.json").read_text(encoding="utf-8"))
+    assert report["summary_failed_chunks"] == 1
+    assert report["summary_encoder"]["name"] == "cointegrated/rubert-tiny2"
+
+
+def test_conflicting_summary_aliases_rejected(site, analysis_config, tmp_path):
+    cfg = collection_config(site)
+    cfg["analysis"] = {**analysis_config, "with_summary": True, "with_llm": False}
+    path = tmp_path / "config.json"
+    path.write_text(json.dumps(cfg), encoding="utf-8")
+    with pytest.raises(ValueError):
+        load_config(path)
